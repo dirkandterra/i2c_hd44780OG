@@ -45,7 +45,7 @@ void user_init(void)
     display_init();
     buttons_init();
     
-    os_printf("\n\rStartup done\n\r");
+    os_printf("\n\rStartup finished\n\r");
 
     system_os_task(user_procTask, user_procTaskPrio,user_procTaskQueue, user_procTaskQueueLen);
 }

@@ -11,8 +11,12 @@ Tnx to Sprite_TM (source came from his esp8266ircbot)
 #include "user_display.h"
 #include "user_config.h"
 
+
 static char lineBuf[1024];
 static int lineBufPos;
+err_t err;
+sint8 prob;
+sint8 gotDNS=0;
 LOCAL os_timer_t network_timer;
 
 //WiFi access point data
@@ -55,35 +59,72 @@ static void ICACHE_FLASH_ATTR networkParseChar(struct espconn *conn, char c) {
 
 static void ICACHE_FLASH_ATTR networkRecvCb(void *arg, char *data, unsigned short len) {
 	struct espconn *conn=(struct espconn *)arg;
+	/*int x;
+	for (x=0; x<len; x++) networkParseChar(conn, data[x]);*/
 	int x;
-	for (x=0; x<len; x++) networkParseChar(conn, data[x]);
+	int ii;
+	LCD_clear();
+    char page_buffer[20]="Data: ";
+
+    char *token, *it;
+
+    token= strtok(data,"~");
+    while(token!=NULL){
+    	it=token;
+    	token=strtok(NULL,"~");
+    }
+
+
+    for(ii=0;ii<sizeof(it)&&ii<14;ii++){
+    	page_buffer[ii+6]=it[ii];
+    }
+    LCD_setCursor(0,0);
+    LCD_print(page_buffer);
+    LCD_setCursor(11,3);
+
+	os_printf("Data: %s\r\n",it);
+	ExtIO_init();
+	os_printf("Received from Server\n\r");
 }
 
 static void ICACHE_FLASH_ATTR networkConnectedCb(void *arg) {
 	struct espconn *conn=(struct espconn *)arg;
+	//
+	//char*data = "GET / HTTP/1.0\r\n\r\n\r\n";
+	char *data = "GET /dricker.onlinewebshop.net/files/tri.php?num=1 HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n";
+	sint8 d = espconn_sent(conn,data,strlen(data));
+
+	 //
+
 	espconn_regist_recvcb(conn, networkRecvCb);
-	lineBufPos=0;
-    os_printf("connected\n\r");
+	/*lineBufPos=0;*/
+    os_printf("connected to Server\n\r");
 }
 
 static void ICACHE_FLASH_ATTR networkReconCb(void *arg, sint8 err) {
-    os_printf("Reconnect\n\r");
+    os_printf("Reconnect to Server: %d\n\r",err);
 	network_init();
 }
 
 static void ICACHE_FLASH_ATTR networkDisconCb(void *arg) {
-    os_printf("Disconnect\n\r");
+    os_printf("Disconnected from Server\n\r");
 	network_init();
 }
 
 static void ICACHE_FLASH_ATTR networkServerFoundCb(const char *name, ip_addr_t *ip, void *arg) {
 	static esp_tcp tcp;
 	struct espconn *conn=(struct espconn *)arg;
-	if (ip==NULL) {
-        os_printf("Nslookup failed :/ Trying again...\n");
+	if (err==-5){
+		os_printf("Busy with DNS request... failed\n");
 		network_init();
+		return;
 	}
-
+	if (ip==NULL) {
+        os_printf("Nslookup failed :%d / Trying again...\n",err);
+		network_init();
+		return;
+	}
+	gotDNS=1;
     os_printf("Server at %d.%d.%d.%d\n",
         *((uint8 *)&ip->addr), *((uint8 *)&ip->addr + 1),
         *((uint8 *)&ip->addr + 2), *((uint8 *)&ip->addr + 3));
@@ -99,7 +140,7 @@ static void ICACHE_FLASH_ATTR networkServerFoundCb(const char *name, ip_addr_t *
 	conn->state=ESPCONN_NONE;
 	conn->proto.tcp=&tcp;
 	conn->proto.tcp->local_port=espconn_port();
-	conn->proto.tcp->remote_port=12346;
+	conn->proto.tcp->remote_port=80;
 	os_memcpy(conn->proto.tcp->remote_ip, &ip->addr, 4);
 
 	espconn_regist_connectcb(conn, networkConnectedCb);
@@ -112,21 +153,39 @@ void ICACHE_FLASH_ATTR
 network_start() {
 	static struct espconn conn;
 	static ip_addr_t ip;
-    os_printf("Looking up server...\n");
-	espconn_gethostbyname(&conn, "www.google.com", &ip, networkServerFoundCb);
+
+	if (!gotDNS){
+		os_printf("Looking up server...\n");
+		//espconn_gethostbyname(&conn, "www.google.com", &ip, networkServerFoundCb);
+		espconn_gethostbyname(&conn, "f10-preview.awardspace.net", &ip, networkServerFoundCb);
+		//espconn_gethostbyname(&conn, "dricker.onlinewebshop.net", &ip, networkServerFoundCb);
+	}
+	else{
+		os_printf("Looking up DNS Name...\n");
+		espconn_connect(&conn);
+	}
 }
 
 void ICACHE_FLASH_ATTR ssidSearch(){
 	int ii=0;
+	struct station_config stationConf;
 	char *ssidName;
 
 	for (ii=0; ii<cgiWifiAps.noAps; ii++){
 		ssidName=cgiWifiAps.apData[ii]->ssid;
-		if(strcmp(ssidName,"SureFireEngineering")==0){
-			os_printf("Found SSID: SureFireEngineering\r\n");
+		if(strcmp(ssidName,SSID)==0){
+			os_memcpy(&stationConf.ssid, SSID, 32);
+			os_memcpy(&stationConf.password, SSID_PWD, 32);
+		    wifi_station_set_config(&stationConf);
+		    os_printf("WIFI Config: %s\r\n" ,ssidName);
+
 		}
-		else if(strcmp(ssidName,"Ricker")==0){
-			os_printf("Found SSID: Ricker\r\n");
+		else if(strcmp(ssidName,SSID2)==0){
+			os_printf("Found SSID: SSID2\r\n");
+			os_memcpy(&stationConf.ssid, SSID2, 32);
+			os_memcpy(&stationConf.password, SSID_PWD2, 32);
+		    wifi_station_set_config(&stationConf);
+		    os_printf("WIFI Config: %s\r\n" ,ssidName);
 		}
 		else{
 			os_printf("SSID: %s\r\n",ssidName);
@@ -192,7 +251,7 @@ void ICACHE_FLASH_ATTR wifiScanDoneCb(void *arg, STATUS status) {
 		LCD_setCursor(0,0);
 		LCD_print(page_buffer);
 	}
-	//
+	//**
 	//We're done.
 	cgiWifiAps.scanInProgress=0;
 }
@@ -211,7 +270,7 @@ void ICACHE_FLASH_ATTR network_check_ip(void)
 
     os_timer_disarm(&network_timer);
 
-    wifiStartScan();
+
 
     wifi_get_ip_info(STATION_IF, &ipconfig);
 
@@ -227,9 +286,10 @@ void ICACHE_FLASH_ATTR network_check_ip(void)
     }
     else
     {
+    	wifiStartScan();
         os_printf("No ip found\n\r");
         os_timer_setfn(&network_timer, (os_timer_func_t *)network_check_ip, NULL);
-        os_timer_arm(&network_timer, 10000, 0);
+        os_timer_arm(&network_timer, 15000, 0);
     }
 
 }

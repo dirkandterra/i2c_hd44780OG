@@ -23,7 +23,7 @@ user_procTask(os_event_t *events)
 void user_init(void)
 {
     char ssid[32] = SSID2;
-    char password[64] = SSID_PASSWORD2;
+    char password[64] = SSID_PWD2;
     struct station_config stationConf;
 
     PIN_IN = GPIO_IN;
@@ -44,6 +44,7 @@ void user_init(void)
     network_init();
     display_init();
     buttons_init();
+    ExtIO_high();
     
     os_printf("\n\rStartup finished\n\r");
 

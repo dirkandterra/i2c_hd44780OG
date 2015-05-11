@@ -54,6 +54,8 @@
 #define Co 0x80  // Control byte 0=no more, 1=more after data sent
 
 uint8 LCD_init();
+uint8 ExtIO_init();
 uint8 LCD_clear();
+uint8 ExtIO_high();
 
 #endif

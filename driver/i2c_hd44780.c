@@ -1,4 +1,5 @@
 #include "driver/i2c_hd44780.h"
+#include "pca8575.h"
 
 //Part of this code comes from http://hmario.home.xs4all.nl/arduino/LiquidCrystal_I2C/
 //And from https://github.com/vanluynm/LiquidCrystal_I2C/
@@ -23,74 +24,13 @@ uint8 _numlines;
 uint8 txData[11];
 
 
-/************ low level data pushing commands **********/
-uint8 ICACHE_FLASH_ATTR LCD_writeByte(uint8 _rs, uint8 _data){
-    i2c_start();
-    i2c_writeByte(LCD_ADDRESS << 1);
-    if (!i2c_check_ack()) 
-    {
-    	os_printf("No Ack Addr\n\r");
-        i2c_stop();
-        return 0;
-    }
 
-	i2c_writeByte((uint8)(_rs));
-    if (!i2c_check_ack())
-    {
-    	os_printf("No Ack data byte\n\r");
-		//i2c_stop();
-		//return 0;
-	}
-
-
-    i2c_writeByte((uint8)(_data));
-    if (!i2c_check_ack())
-    {
-    	os_printf("No Ack data byte\n\r");
-		//i2c_stop();
-		//return 0;
-	}
-    i2c_stop();
-    return 1;
-}
-
-/************ low level data pushing commands **********/
-uint8 ICACHE_FLASH_ATTR LCD_writeBytes(uint8 _numBytes, uint8 *_data){
-
-    i2c_start();
-    i2c_writeByte(LCD_ADDRESS << 1);
-    if (!i2c_check_ack())
-    {
-    	os_printf("No Ack Addr\n\r");
-        i2c_stop();
-        return 0;
-    }
-    int ii=0;
-    while (ii<_numBytes){
-    	//os_printf("Byte %d\n\r",_data[ii]);
-    	i2c_writeByte(_data[ii]);
-		if (!i2c_check_ack())
-		{
-			os_printf("No Ack data byte\n\r");
-			i2c_stop();
-			return 0;
-		}
-		ii++;
-    }
-
-    i2c_stop();
-    return 1;
-}
-
-uint8 ICACHE_FLASH_ATTR LCD_readByte(uint8 _addr, uint8 _data){
-	return 0;
-}
 
 
 /*********** mid level commands, for sending data/cmds */
 
 void ICACHE_FLASH_ATTR LCD_command(uint8 rs, uint8 value) {
-	LCD_writeByte(rs,value);
+	I2CwriteByte(LCD_ADDRESS,rs,value);
 }
 uint8 ICACHE_FLASH_ATTR LCD_read(uint8 addr) {
     return 0;
@@ -102,7 +42,7 @@ void ICACHE_FLASH_ATTR LCD_print(char data[])
     size = strlen(data);
     uint8 i;
     for (i = 0; i < size; i++) {
-    	LCD_writeByte(0x40, data[i]);
+    	I2CwriteByte(LCD_ADDRESS,0x40, data[i]);
     }
 }
 
@@ -112,11 +52,11 @@ void ICACHE_FLASH_ATTR LCD_setCursor(uint8 col, uint8 row){
     if ( row > _numlines ) {
         row = _numlines-1;    // we count rows starting w/0
     }
-    LCD_writeByte(0x00, (LCD_SETDDRAMADDR | (col + row_offsets[row])));
+    I2CwriteByte(LCD_ADDRESS,0x00, (LCD_SETDDRAMADDR | (col + row_offsets[row])));
 }
 
 uint8 ICACHE_FLASH_ATTR LCD_clear(){
-	LCD_writeByte(0x00,0x01);
+	I2CwriteByte(LCD_ADDRESS,0x00,0x01);
 	return 0;
 }
 uint8 ICACHE_FLASH_ATTR
@@ -160,7 +100,7 @@ LCD_init(){
 	LCD_command(0x40,0x21);			// Print '!'
 */
 
-    LCD_writeBytes(10,txData);
+    I2CwriteBytes(LCD_ADDRESS,10,txData);
 
     char page_buffer[20];
     os_sprintf(page_buffer,"Connecting WiFi...");
@@ -169,3 +109,29 @@ LCD_init(){
 
     return 1;
 }
+
+uint8 ICACHE_FLASH_ATTR ExtIO_init(){
+	char d[2];
+	char c[2];
+	d[0]=0xFF;
+	d[1]=0xFF;
+	c[0]=0x00;
+	c[1]=0x00;
+
+	writePCA8575(c);
+	writePCA8575(d);
+	writePCA8575(c);
+
+
+    return 1;
+}
+
+uint8 ICACHE_FLASH_ATTR ExtIO_high(){
+	char d[2];
+	d[0]=0xFF;
+	d[1]=0xFF;
+	writePCA8575(d);
+	return 1;
+
+}
+

@@ -70,14 +70,8 @@ display_data(uint8 page, uint8 line, char data[20])
         case 2:
             os_memcpy(&_PageData[page].line2, data, 20);
         break; 
-        case 3:
-            os_memcpy(&_PageData[page].line3, data, 20);
-        break; 
-        case 4:
-            os_memcpy(&_PageData[page].line4, data, 20);
-        break;
     }
-    if (startup_done == 0 && line == 4) {
+    if (startup_done == 0 && line == 2) {
         display_redraw();
         os_timer_disarm(&refresh_timer);
         os_timer_setfn(&refresh_timer, (os_timer_func_t *)display_refresh, 0);

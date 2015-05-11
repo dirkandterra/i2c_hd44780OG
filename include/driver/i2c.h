@@ -24,7 +24,7 @@
 #include "osapi.h"
 #include "gpio.h"
 
-#define I2C_SLEEP_TIME 10 
+#define I2C_SLEEP_TIME 5
 
 // SDA on GPIO2
 #define I2C_SDA_MUX PERIPHS_IO_MUX_GPIO2_U
@@ -51,5 +51,8 @@ void i2c_send_ack(uint8 state);
 uint8 i2c_check_ack(void);
 uint8 i2c_readByte(void);
 void i2c_writeByte(uint8 data);
+uint8 I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_data);
+uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data);
+uint8 ICACHE_FLASH_ATTR I2CreadByte(uint8 _i2cAddr, uint8 _addr, uint8 _data);
 
 #endif

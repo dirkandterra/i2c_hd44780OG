@@ -15,8 +15,6 @@
 typedef struct {
       char line1[20];
       char line2[20];
-      char line3[20];
-      char line4[20];
 } PageData;
 
 void display_redraw(void);

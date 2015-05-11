@@ -245,3 +245,67 @@ i2c_writeByte(uint8 data)
         os_delay_us(I2C_SLEEP_TIME);
     }
 }
+
+//********************************DR ADDED********************************
+/************ low level data pushing commands **********/
+uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data){
+    i2c_start();
+    i2c_writeByte(_i2cAddr << 1);
+    if (!i2c_check_ack())
+    {
+    	os_printf("No Ack Addr\n\r");
+        i2c_stop();
+        return 0;
+    }
+
+	i2c_writeByte((uint8)(_rs));
+    if (!i2c_check_ack())
+    {
+    	os_printf("No Ack data byte\n\r");
+		//i2c_stop();
+		//return 0;
+	}
+
+
+    i2c_writeByte((uint8)(_data));
+    if (!i2c_check_ack())
+    {
+    	os_printf("No Ack data byte\n\r");
+		//i2c_stop();
+		//return 0;
+	}
+    i2c_stop();
+    return 1;
+}
+
+/************ low level data pushing commands **********/
+uint8 ICACHE_FLASH_ATTR I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_data){
+
+    i2c_start();
+    i2c_writeByte(_i2cAddr << 1);
+    if (!i2c_check_ack())
+    {
+    	os_printf("No Ack Addr: %i \n\r",_i2cAddr);
+        i2c_stop();
+        return 0;
+    }
+    int ii=0;
+    while (ii<_numBytes){
+    	//os_printf("Byte %d\n\r",_data[ii]);
+    	i2c_writeByte(_data[ii]);
+		if (!i2c_check_ack())
+		{
+			os_printf("No Ack data byte: %i \n\r",_i2cAddr);
+			i2c_stop();
+			return 0;
+		}
+		ii++;
+    }
+    //os_printf("Data for %i: %i \n\r",_i2cAddr,_data[0]);
+    i2c_stop();
+    return 1;
+}
+
+uint8 ICACHE_FLASH_ATTR I2CreadByte(uint8 _i2cAddr, uint8 _addr, uint8 _data){
+	return 0;
+}

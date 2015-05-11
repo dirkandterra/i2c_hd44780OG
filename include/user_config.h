@@ -2,10 +2,10 @@
 #define __USER_CONFIG_H__
 
 #define SSID "SureFireEngineering"
-#define SSID_PASSWORD "sfire500"
+#define SSID_PWD "sfire500"
 
 #define SSID2 "Ricker"
-#define SSID_PASSWORD2 "104Ricker"
+#define SSID_PWD2 "104Ricker"
 
 #define GPIO_IN 2
 

@@ -57,5 +57,6 @@ uint8 LCD_init();
 uint8 ExtIO_init();
 uint8 LCD_clear();
 uint8 ExtIO_high();
+uint8 ExtIO_low();
 
 #endif

@@ -12,11 +12,13 @@ Tnx to Sprite_TM (source came from his esp8266ircbot)
 #include "user_config.h"
 
 
+
 static char lineBuf[1024];
 static int lineBufPos;
 err_t err;
 sint8 prob;
 sint8 gotDNS=0;
+uint8 toggle=0;
 LOCAL os_timer_t network_timer;
 
 //WiFi access point data
@@ -83,18 +85,33 @@ static void ICACHE_FLASH_ATTR networkRecvCb(void *arg, char *data, unsigned shor
     LCD_setCursor(11,3);
 
 	os_printf("Data: %s\r\n",it);
-	ExtIO_init();
+	if(it[0]=='4'){
+		ExtIO_high();
+	}
+	else{
+		ExtIO_low();
+
+	}
 	os_printf("Received from Server\n\r");
 }
 
 static void ICACHE_FLASH_ATTR networkConnectedCb(void *arg) {
 	struct espconn *conn=(struct espconn *)arg;
-	//
-	//char*data = "GET / HTTP/1.0\r\n\r\n\r\n";
-	char *data = "GET /dricker.onlinewebshop.net/files/tri.php?num=1 HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n";
+	char *data= (char *)os_malloc(180);
+	os_sprintf(data,"GET /dricker.onlinewebshop.net/files/tri.php?num=%c HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n",toggle+0x30);
+
+	if (toggle){
+		toggle=0;
+		//data = "GET /dricker.onlinewebshop.net/files/tri.php?num=1 HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n";
+	}
+	else{
+		toggle=1;
+		//data = "GET /dricker.onlinewebshop.net/files/tri.php?num=0 HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n";
+	}
+
 	sint8 d = espconn_sent(conn,data,strlen(data));
 
-	 //
+	 os_free(data);
 
 	espconn_regist_recvcb(conn, networkRecvCb);
 	/*lineBufPos=0;*/
@@ -155,13 +172,13 @@ network_start() {
 	static ip_addr_t ip;
 
 	if (!gotDNS){
-		os_printf("Looking up server...\n");
+		os_printf("Looking up DNS...\n");
 		//espconn_gethostbyname(&conn, "www.google.com", &ip, networkServerFoundCb);
 		espconn_gethostbyname(&conn, "f10-preview.awardspace.net", &ip, networkServerFoundCb);
 		//espconn_gethostbyname(&conn, "dricker.onlinewebshop.net", &ip, networkServerFoundCb);
 	}
 	else{
-		os_printf("Looking up DNS Name...\n");
+		os_printf("Connecting to server...\n");
 		espconn_connect(&conn);
 	}
 }
@@ -258,7 +275,7 @@ void ICACHE_FLASH_ATTR wifiScanDoneCb(void *arg, STATUS status) {
 //Routine to start a WiFi access point scan.
 void ICACHE_FLASH_ATTR wifiStartScan() {
 //	int x;
-	os_printf("Red Team GO! -> %d\r\n",cgiWifiAps.scanInProgress);
+	os_printf("Start WIFI scan -> %d\r\n",cgiWifiAps.scanInProgress);
 	if (cgiWifiAps.scanInProgress) return;
 	cgiWifiAps.scanInProgress=1;
 	wifi_station_scan(NULL, wifiScanDoneCb);
@@ -276,10 +293,12 @@ void ICACHE_FLASH_ATTR network_check_ip(void)
 
 
     if (wifi_station_get_connect_status() == STATION_GOT_IP && ipconfig.ip.addr != 0) {
+    	os_printf("Getting IP...\r\n");
     	LCD_clear();
         char page_buffer[20];
         os_sprintf(page_buffer,"IP: %d.%d.%d.%d",IP2STR(&ipconfig.ip));
         LCD_setCursor(0,0);
+
         LCD_print(page_buffer);
         LCD_setCursor(11,3);
         network_start();

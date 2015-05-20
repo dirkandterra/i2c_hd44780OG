@@ -125,6 +125,7 @@ i2c_restart(void)
 void ICACHE_FLASH_ATTR
 i2c_stop(void)
 {
+	i2c_sda(0);
     os_delay_us(I2C_SLEEP_TIME);
     i2c_sck(1);
     os_delay_us(I2C_SLEEP_TIME);
@@ -270,7 +271,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data){
     i2c_writeByte((uint8)(_data));
     if (!i2c_check_ack())
     {
-    	os_printf("No Ack data byte\n\r");
+    	os_printf("No Ack data byte: 0x%x \n\r",_i2cAddr);
 		//i2c_stop();
 		//return 0;
 	}
@@ -285,7 +286,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_d
     i2c_writeByte(_i2cAddr << 1);
     if (!i2c_check_ack())
     {
-    	os_printf("No Ack Addr: %i \n\r",_i2cAddr);
+    	os_printf("No Ack Addr: 0x%x \n\r",_i2cAddr);
         i2c_stop();
         return 0;
     }
@@ -295,7 +296,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_d
     	i2c_writeByte(_data[ii]);
 		if (!i2c_check_ack())
 		{
-			os_printf("No Ack data byte: %i \n\r",_i2cAddr);
+			os_printf("No Ack data byte: 0x%x \n\r",_i2cAddr);
 			i2c_stop();
 			return 0;
 		}
@@ -306,6 +307,57 @@ uint8 ICACHE_FLASH_ATTR I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_d
     return 1;
 }
 
-uint8 ICACHE_FLASH_ATTR I2CreadByte(uint8 _i2cAddr, uint8 _addr, uint8 _data){
-	return 0;
+uint8* ICACHE_FLASH_ATTR I2CreadBytesNoReg(uint8 _i2cAddr, uint8 _numBytes){
+
+	static uint8 data[16];
+	i2c_start();
+	i2c_writeByte((_i2cAddr << 1)+1);
+	if (!i2c_check_ack())
+	{
+		os_printf("No Ack Addr: 0x%x \n\r",_i2cAddr);
+		i2c_stop();
+		return data;
+	}
+
+	int ii=0;
+    while (ii<_numBytes){
+    	data[ii]=i2c_readByte();
+    	i2c_send_ack(1);
+    	ii++;
+    }
+    i2c_stop();
+	return data;
+
+}
+
+uint8 ICACHE_FLASH_ATTR I2CreadByte(uint8 _i2cAddr, uint8 _addr){
+	uint8 *ret;
+	ret=I2CreadBytes(_i2cAddr,1,_addr);
+	return ret[0];
+}
+
+uint8* ICACHE_FLASH_ATTR I2CreadBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 _addr){
+    uint8 *data;
+	i2c_start();
+    i2c_writeByte(_i2cAddr << 1+1);
+    if (!i2c_check_ack())
+    {
+    	os_printf("No Ack Addr: 0x%x \n\r",_i2cAddr);
+        i2c_stop();
+        return data;
+    }
+    i2c_writeByte((uint8)(_addr));
+    if (!i2c_check_ack())
+    {
+    	os_printf("No Ack reg byte\n\r");
+    	i2c_stop();
+    	//return 0;
+    }
+    int ii=0;
+    while (ii<_numBytes){
+    	data[ii]=i2c_readByte();
+    	i2c_send_ack(1);
+    }
+    i2c_stop();
+	return data;
 }

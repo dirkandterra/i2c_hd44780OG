@@ -52,7 +52,9 @@ uint8 i2c_check_ack(void);
 uint8 i2c_readByte(void);
 void i2c_writeByte(uint8 data);
 uint8 I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_data);
-uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data);
-uint8 ICACHE_FLASH_ATTR I2CreadByte(uint8 _i2cAddr, uint8 _addr, uint8 _data);
+uint8 I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data);
+uint8* I2CreadBytesNoReg(uint8 _i2cAddr, uint8 _numBytes);
+uint8 I2CreadByte(uint8 _i2cAddr, uint8 _addr);
+uint8* I2CreadBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 _addr);
 
 #endif

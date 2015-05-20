@@ -22,7 +22,9 @@ uint8 _displaymode;
 uint8 _backlightval;
 uint8 _numlines;
 uint8 txData[11];
+pcaPort Port0;
 
+//*****PCA Port Setup ******/
 
 
 
@@ -111,26 +113,35 @@ LCD_init(){
 }
 
 uint8 ICACHE_FLASH_ATTR ExtIO_init(){
-	char d[2];
-	char c[2];
-	d[0]=0xFF;
-	d[1]=0xFF;
-	c[0]=0x00;
-	c[1]=0x00;
+	Port0.pcaAddr=0x20;
+	Port0.portATris=0x0F;
+	Port0.portBTris=0x0F;
 
-	writePCA8575(c);
-	writePCA8575(d);
-	writePCA8575(c);
-
+	Port0.portA=0xFF;
+	Port0.portB=0xFF;
+	writePCA8575(Port0);
 
     return 1;
 }
 
 uint8 ICACHE_FLASH_ATTR ExtIO_high(){
-	char d[2];
-	d[0]=0xFF;
-	d[1]=0xFF;
-	writePCA8575(d);
+	Port0.portA=0x80;
+	Port0.portB=0xC0;
+	writePCA8575(Port0);
+	Port0.portA=0x00;
+	readPCA8575(&Port0);
+	os_printf("PortA -> 0x%x  PortB-> 0x%x\r\n",Port0.portA,Port0.portB);
+	return 1;
+
+}
+
+uint8 ICACHE_FLASH_ATTR ExtIO_low(){
+	Port0.portA=0xFF;
+	Port0.portB=0xFF;
+	writePCA8575(Port0);
+	Port0.portA=0xFF;
+	readPCA8575(&Port0);
+	os_printf("PortA -> 0x%x\r\n",Port0.portA);
 	return 1;
 
 }

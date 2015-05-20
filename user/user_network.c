@@ -8,7 +8,6 @@ Tnx to Sprite_TM (source came from his esp8266ircbot)
 #include "mem.h"
 #include "osapi.h"
 #include "user_network.h"
-#include "user_display.h"
 #include "user_config.h"
 
 
@@ -65,7 +64,7 @@ static void ICACHE_FLASH_ATTR networkRecvCb(void *arg, char *data, unsigned shor
 	for (x=0; x<len; x++) networkParseChar(conn, data[x]);*/
 	int x;
 	int ii;
-	LCD_clear();
+	//!!LCD_clear();
     char page_buffer[20]="Data: ";
 
     char *token, *it;
@@ -80,9 +79,9 @@ static void ICACHE_FLASH_ATTR networkRecvCb(void *arg, char *data, unsigned shor
     for(ii=0;ii<sizeof(it)&&ii<14;ii++){
     	page_buffer[ii+6]=it[ii];
     }
-    LCD_setCursor(0,0);
-    LCD_print(page_buffer);
-    LCD_setCursor(11,3);
+    //!! LCD_setCursor(0,0);
+    //!! LCD_print(page_buffer);
+    //!!LCD_setCursor(11,3);
 
 	os_printf("Data: %s\r\n",it);
 	if(it[0]=='4'){
@@ -150,9 +149,9 @@ static void ICACHE_FLASH_ATTR networkServerFoundCb(const char *name, ip_addr_t *
     os_sprintf(page_buffer,"DST: %d.%d.%d.%d",
         *((uint8 *)&ip->addr), *((uint8 *)&ip->addr + 1),
         *((uint8 *)&ip->addr + 2), *((uint8 *)&ip->addr + 3));
-    LCD_setCursor(0,1);
-   LCD_print(page_buffer);
-    LCD_setCursor(11,1);
+    //!!LCD_setCursor(0,1);
+    //!!LCD_print(page_buffer);
+    //!! LCD_setCursor(11,1);
 	conn->type=ESPCONN_TCP;
 	conn->state=ESPCONN_NONE;
 	conn->proto.tcp=&tcp;
@@ -262,11 +261,11 @@ void ICACHE_FLASH_ATTR wifiScanDoneCb(void *arg, STATUS status) {
 	//DR**
 	if (cgiWifiAps.apData[1]!=NULL)
 	{
-		LCD_clear();
+		//!!LCD_clear();
 		char page_buffer[20];
 		os_sprintf(page_buffer,">%s",cgiWifiAps.apData[1]->ssid);
-		LCD_setCursor(0,0);
-		LCD_print(page_buffer);
+		//!!LCD_setCursor(0,0);
+		//!!LCD_print(page_buffer);
 	}
 	//**
 	//We're done.
@@ -294,13 +293,13 @@ void ICACHE_FLASH_ATTR network_check_ip(void)
 
     if (wifi_station_get_connect_status() == STATION_GOT_IP && ipconfig.ip.addr != 0) {
     	os_printf("Getting IP...\r\n");
-    	LCD_clear();
+    	//!!LCD_clear();
         char page_buffer[20];
         os_sprintf(page_buffer,"IP: %d.%d.%d.%d",IP2STR(&ipconfig.ip));
-        LCD_setCursor(0,0);
+        //!!LCD_setCursor(0,0);
 
-        LCD_print(page_buffer);
-        LCD_setCursor(11,3);
+        //!!LCD_print(page_buffer);
+        //!!LCD_setCursor(11,3);
         network_start();
     }
     else
@@ -355,5 +354,7 @@ network_init()
     os_timer_setfn(&network_timer, (os_timer_func_t *)network_check_ip, NULL);
     os_timer_arm(&network_timer, 10000, 0);
 }
+
+
 
 

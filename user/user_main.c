@@ -1,14 +1,12 @@
 #include "ets_sys.h"
 #include "driver/uart.h"
 #include "driver/i2c.h"
-#include "driver/i2c_hd44780.h"
 #include "osapi.h"
 #include "os_type.h"
 #include "user_interface.h"
 #include "user_config.h"
-#include "user_display.h"
-#include "user_buttons.h"
 #include "user_network.h"
+#include "user_stuff.h"
 
 volatile uint32_t PIN_IN;
 
@@ -31,6 +29,7 @@ void user_init(void)
     system_timer_reinit();
     // 115200
     UARTInit();
+    i2c_init();
 
     os_memcpy(&stationConf.ssid, ssid, 32);
     os_memcpy(&stationConf.password, password, 32);
@@ -42,8 +41,7 @@ void user_init(void)
 
 
     network_init();
-    display_init();
-    buttons_init();
+    //!!display_init();
     ExtIO_init();
 
     
@@ -51,4 +49,6 @@ void user_init(void)
 
     system_os_task(user_procTask, user_procTaskPrio,user_procTaskQueue, user_procTaskQueueLen);
 }
+
+
 

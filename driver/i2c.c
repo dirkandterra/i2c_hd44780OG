@@ -154,11 +154,7 @@ i2c_send_ack(uint8 state)
     os_delay_us(I2C_SLEEP_TIME);
     i2c_sck(1);
     os_delay_us(I2C_SLEEP_TIME);
-    i2c_sck(0);
-    os_delay_us(I2C_SLEEP_TIME);
 
-    i2c_sda(1);
-    os_delay_us(I2C_SLEEP_TIME);
 }
 
 /**
@@ -254,7 +250,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data){
     i2c_writeByte(_i2cAddr << 1);
     if (!i2c_check_ack())
     {
-    	os_printf("No Ack Addr\n\r");
+    	os_printf("No Ack Addr(Write)\n\r");
         i2c_stop();
         return 0;
     }
@@ -262,7 +258,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data){
 	i2c_writeByte((uint8)(_rs));
     if (!i2c_check_ack())
     {
-    	os_printf("No Ack data byte\n\r");
+    	os_printf("No Ack data byte(Write)\n\r");
 		//i2c_stop();
 		//return 0;
 	}
@@ -271,7 +267,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteByte(uint8 _i2cAddr, uint8 _rs, uint8 _data){
     i2c_writeByte((uint8)(_data));
     if (!i2c_check_ack())
     {
-    	os_printf("No Ack data byte: 0x%x \n\r",_i2cAddr);
+    	os_printf("No Ack data byte(Write): 0x%x \n\r",_i2cAddr);
 		//i2c_stop();
 		//return 0;
 	}
@@ -286,7 +282,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_d
     i2c_writeByte(_i2cAddr << 1);
     if (!i2c_check_ack())
     {
-    	os_printf("No Ack Addr: 0x%x \n\r",_i2cAddr);
+    	os_printf("No Ack Addr(Writes): 0x%x \n\r",_i2cAddr);
         i2c_stop();
         return 0;
     }
@@ -296,7 +292,7 @@ uint8 ICACHE_FLASH_ATTR I2CwriteBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 *_d
     	i2c_writeByte(_data[ii]);
 		if (!i2c_check_ack())
 		{
-			os_printf("No Ack data byte: 0x%x \n\r",_i2cAddr);
+			os_printf("No Ack data byte(Writes): 0x%x \n\r",_i2cAddr);
 			i2c_stop();
 			return 0;
 		}
@@ -314,7 +310,7 @@ uint8* ICACHE_FLASH_ATTR I2CreadBytesNoReg(uint8 _i2cAddr, uint8 _numBytes){
 	i2c_writeByte((_i2cAddr << 1)+1);
 	if (!i2c_check_ack())
 	{
-		os_printf("No Ack Addr: 0x%x \n\r",_i2cAddr);
+		os_printf("No Ack Addr(Read): 0x%x \n\r",_i2cAddr);
 		i2c_stop();
 		return data;
 	}

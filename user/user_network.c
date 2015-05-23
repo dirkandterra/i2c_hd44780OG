@@ -123,7 +123,7 @@ static void ICACHE_FLASH_ATTR networkReconCb(void *arg, sint8 err) {
 }
 
 static void ICACHE_FLASH_ATTR networkDisconCb(void *arg) {
-    os_printf("Disconnected from Server\n\r");
+    os_printf("Disconnected from Server\n\r\n\r\n\r");
 	network_init();
 }
 
@@ -140,7 +140,7 @@ static void ICACHE_FLASH_ATTR networkServerFoundCb(const char *name, ip_addr_t *
 		network_init();
 		return;
 	}
-	gotDNS=1;
+	gotDNS=0;
     os_printf("Server at %d.%d.%d.%d\n",
         *((uint8 *)&ip->addr), *((uint8 *)&ip->addr + 1),
         *((uint8 *)&ip->addr + 2), *((uint8 *)&ip->addr + 3));

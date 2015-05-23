@@ -12,8 +12,21 @@
 void ICACHE_FLASH_ATTR writePCA8575(pcaPort _port)
 {
 	char _data[2];
-	_data[0]=_port.portATris | _port.portA;
-	_data[1]=_port.portBTris | _port.portB;
+
+	_data[0]=_port.portA;
+	_data[1]=_port.portB;
+	if (_port.invOutput){
+		_data[0]=~_port.portA;
+		_data[1]=~_port.portB;
+		os_printf("Invert A: 0x%x\r\nInvert B: 0x%x\r\n",_data[0],_data[1]);
+	}
+	else{
+		_data[0]=_port.portA;
+		_data[1]=_port.portB;
+	}
+	_data[0]=_data[0] | _port.portATris;
+	_data[1]=_data[1] | _port.portBTris;
+	os_printf("A: 0x%x\r\nB: 0x%x\r\n",_data[0],_data[1]);
 	I2CwriteBytes(_port.pcaAddr,2,_data);
 }
 
@@ -30,8 +43,8 @@ void ICACHE_FLASH_ATTR readPCA8575(pcaPort *_port)
 	else{
 		os_printf("Port Data Error\r\n");
 	}
-	os_printf("Read A: 0x%x\r\n",_port->portA);
-	os_printf("Read B: 0x%x\r\n",_port->portB);
+	//os_printf("Read A: 0x%x\r\n",_port->portA);
+	//os_printf("Read B: 0x%x\r\n",_port->portB);
 
 }
 

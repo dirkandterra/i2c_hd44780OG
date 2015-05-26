@@ -24,8 +24,6 @@ void user_init(void)
     char password[64] = SSID_PWD;
     struct station_config stationConf;
 
-    PIN_IN = GPIO_IN;
-
     system_timer_reinit();
     // 115200
     UARTInit();
@@ -39,7 +37,8 @@ void user_init(void)
     wifi_set_phy_mode(PHY_MODE_11N);
     wifi_station_set_config(&stationConf);
 
-
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5);
+	GPIO_OUTPUT_SET(5, 0);
     network_init();
     //!!display_init();
     ExtIO_init();

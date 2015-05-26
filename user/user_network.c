@@ -101,10 +101,12 @@ static void ICACHE_FLASH_ATTR networkConnectedCb(void *arg) {
 
 	if (toggle){
 		toggle=0;
+		LCD_Eh();
 		//data = "GET /dricker.onlinewebshop.net/files/tri.php?num=1 HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n";
 	}
 	else{
 		toggle=1;
+		LCD_El();
 		//data = "GET /dricker.onlinewebshop.net/files/tri.php?num=0 HTTP/1.1\r\nHost: f10-preview.awardspace.net\r\nUser-Agent: Arduino\r\nAccept: application/json\r\nConnection: close\r\n\r\n";
 	}
 

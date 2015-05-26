@@ -18,7 +18,6 @@ void ICACHE_FLASH_ATTR writePCA8575(pcaPort _port)
 	if (_port.invOutput){
 		_data[0]=~_port.portA;
 		_data[1]=~_port.portB;
-		os_printf("Invert A: 0x%x\r\nInvert B: 0x%x\r\n",_data[0],_data[1]);
 	}
 	else{
 		_data[0]=_port.portA;

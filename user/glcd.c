@@ -8,6 +8,8 @@ unsigned char currentX=0;
 unsigned char currentY=0;
 unsigned char currentOffset;
 
+
+
 static const unsigned char cool[95][5]=
 {
     { 0x00, 0x00, 0x00, 0x00, 0x00 },  // sp
@@ -124,7 +126,7 @@ void delay (int dly);
 
 
 
-/***************************************
+/***************************************/
 void initLCD(){
 	C3();
 	delay(500);
@@ -139,14 +141,14 @@ void initLCD(){
 /***************************************/
 void toggleE(){
 	delay(5);
-	LCD_E=1;
+	LCD_Eh();
 	delay(5);
-	LCD_E=0;	
+	LCD_El();
 }
 
 
 
-/***************************************
+/***************************************/
 void dwLCD(unsigned char c){
 	LCD_RW=0;
 	LCD_RS=1;
@@ -171,7 +173,7 @@ void dwLCD(unsigned char c){
 	}
 }
 
-/***************************************
+/***************************************/
 void rwLCD(unsigned char c){
 	LCD_RW=0;
 	LCD_RS=0;
@@ -179,7 +181,7 @@ void rwLCD(unsigned char c){
 	toggleE();
 }
 
-/***************************************
+/***************************************/
 void clrLCD(void)
 {
 	unsigned char page = 0;
@@ -196,7 +198,7 @@ void clrLCD(void)
 		page++;
 	}
 }
-/********************************************
+/********************************************/
 void printStr(char *c, char invert){
 	int i=strlen(c);
 	int j;
@@ -204,7 +206,7 @@ void printStr(char *c, char invert){
 		printChar(c[j],invert);
 	}
 }
-/********************************************
+/********************************************/
 void printChar(char c,char invert){
 	char ii;
 	char jj=0x00;
@@ -231,7 +233,7 @@ void printChar(char c,char invert){
 	}
 }
 
-/********************************************
+/********************************************/
 void printImage(unsigned char *c,char width, char height, char invert){
 	char startX=currentX;
 	char startY=currentY;
@@ -251,7 +253,7 @@ void printImage(unsigned char *c,char width, char height, char invert){
 
 }
 
-/***************************************
+/***************************************/
 void setPos(unsigned char x, unsigned char y)
 {
 	unsigned char page;
@@ -283,7 +285,7 @@ void setPos(unsigned char x, unsigned char y)
 
 }
 
-/***************************************
+/***************************************/
 void barDataHoriz(unsigned char per, unsigned char width, unsigned char strt){
 	float f;
 	int ii;
@@ -304,7 +306,7 @@ void barDataHoriz(unsigned char per, unsigned char width, unsigned char strt){
 	}
 }
 
-/***************************************
+/***************************************/
 void barDataVert(unsigned char per, unsigned char width, unsigned char strt){
 	float f;
 	int ii;

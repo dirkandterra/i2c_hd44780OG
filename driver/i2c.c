@@ -142,18 +142,19 @@ i2c_stop(void)
 void ICACHE_FLASH_ATTR
 i2c_send_ack(uint8 state)
 {
-    i2c_sck(0);
-    os_delay_us(I2C_SLEEP_TIME);
     //Set SDA 
     //  HIGH for NACK
     //  LOW  for ACK
     i2c_sda((state?0:1));
 
     //Pulse the SCK
-    i2c_sck(0);
-    os_delay_us(I2C_SLEEP_TIME);
+   // i2c_sck(0);
+   // os_delay_us(I2C_SLEEP_TIME);
     i2c_sck(1);
     os_delay_us(I2C_SLEEP_TIME);
+    i2c_sck(0);
+    os_delay_us(I2C_SLEEP_TIME);
+
 
 }
 
@@ -168,8 +169,6 @@ i2c_check_ack(void)
 {
     uint8 ack;
     i2c_sda(1);
-    os_delay_us(I2C_SLEEP_TIME);
-    i2c_sck(0);
     os_delay_us(I2C_SLEEP_TIME);
     i2c_sck(1);
     os_delay_us(I2C_SLEEP_TIME);

@@ -12,7 +12,6 @@ volatile uint32_t PIN_IN;
 
 os_event_t    user_procTaskQueue[user_procTaskQueueLen];
 static void user_procTask(os_event_t *events);
-
 static void ICACHE_FLASH_ATTR
 user_procTask(os_event_t *events)
 {
@@ -29,6 +28,7 @@ void user_init(void)
     UARTInit();
     i2c_init();
 
+
     os_memcpy(&stationConf.ssid, ssid, 32);
     os_memcpy(&stationConf.password, password, 32);
 
@@ -42,6 +42,7 @@ void user_init(void)
     network_init();
     //!!display_init();
     ExtIO_init();
+    WYM_init();
 
     
     os_printf("\n\rStartup finished\n\r");

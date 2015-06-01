@@ -129,20 +129,24 @@ void delay (int dly);
 /***************************************/
 void initLCD(){
 	C3();
-	delay(500);
+	os_delay_us(1000);
 	rwLCD(0x3F);		// Turn Display on
 	rwLCD(0xC0);		// set first page to top
 	rwLCD(0xb8);		// Select First Page
 	rwLCD(0x40);		// Select First Row
 
 	C1();
+
+	clrLCD();
 }
 	
 /***************************************/
 void toggleE(){
-	delay(5);
+	LCD_El();
+	LCD_Data_Wr();
+	os_delay_us(60);
 	LCD_Eh();
-	delay(5);
+	os_delay_us(60);
 	LCD_El();
 }
 

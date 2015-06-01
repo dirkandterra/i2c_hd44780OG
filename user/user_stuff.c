@@ -11,6 +11,10 @@
 
 pcaPort Port0;
 
+void ICACHE_FLASH_ATTR WYM_init(){
+	initLCD();
+}
+
 uint8 ICACHE_FLASH_ATTR ExtIO_init(){
 
 	Port0.pcaAddr=0x20;
@@ -26,29 +30,23 @@ uint8 ICACHE_FLASH_ATTR ExtIO_init(){
 }
 
 uint8 ICACHE_FLASH_ATTR ExtIO_high(){
-	char c[5];
+	char c[10];
 	setPos(0,0x00);
-	strcpy(c, "High");
+	strcpy(c, "High Level");
 	printStr(c,0);
-	Port0.portA=0x80;
-	Port0.portB=0xC0;
-	writePCA8575(Port0);
-	readPCA8575(&Port0);
-	os_printf("PortA -> 0x%x  PortB-> 0x%x\r\n",Port0.portA,Port0.portB);
+	//readPCA8575(&Port0);
+	//os_printf("PortA -> 0x%x  PortB-> 0x%x\r\n",Port0.portA,Port0.portB);
 	return 1;
 
 }
 
 uint8 ICACHE_FLASH_ATTR ExtIO_low(){
-	char c[5];
+	char c[10];
 	setPos(0,0x00);
-	strcpy(c, "Low");
+	strcpy(c, "Low  Level");
 	printStr(c,0);
-	Port0.portA=0xFF;
-	Port0.portB=0x00;
-	writePCA8575(Port0);
-	readPCA8575(&Port0);
-	os_printf("PortA -> 0x%x  PortB-> 0x%x\r\n",Port0.portA,Port0.portB);
+	//readPCA8575(&Port0);
+	//os_printf("PortA -> 0x%x  PortB-> 0x%x\r\n",Port0.portA,Port0.portB);
 	return 1;
 
 }

@@ -17,6 +17,7 @@
 
 #define LCD_Eh()			GPIO_OUTPUT_SET(5, 1);
 #define LCD_El()			GPIO_OUTPUT_SET(5, 0);
+#define LCD_Data_Wr()		writePCA8575(Port0);
 #define LCData				Port0.portA
 #define LCD_RW 				Port0.B0
 #define LCD_RS 				Port0.B1

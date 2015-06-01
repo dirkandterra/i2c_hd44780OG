@@ -154,6 +154,8 @@ i2c_send_ack(uint8 state)
     os_delay_us(I2C_SLEEP_TIME);
     i2c_sck(0);
     os_delay_us(I2C_SLEEP_TIME);
+    i2c_sda(1);
+
 
 
 }
@@ -316,9 +318,12 @@ uint8* ICACHE_FLASH_ATTR I2CreadBytesNoReg(uint8 _i2cAddr, uint8 _numBytes){
 
 	int ii=0;
     while (ii<_numBytes){
+    	if (ii!=0){
+    		i2c_send_ack(1);
+    	}
     	data[ii]=i2c_readByte();
-    	i2c_send_ack(1);
     	ii++;
+
     }
     i2c_stop();
 	return data;
@@ -350,8 +355,10 @@ uint8* ICACHE_FLASH_ATTR I2CreadBytes(uint8 _i2cAddr, uint8 _numBytes, uint8 _ad
     }
     int ii=0;
     while (ii<_numBytes){
+    	if (ii!=0){
+    		i2c_send_ack(1);
+    	}
     	data[ii]=i2c_readByte();
-    	i2c_send_ack(1);
     }
     i2c_stop();
 	return data;

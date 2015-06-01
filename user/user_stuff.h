@@ -11,6 +11,7 @@
 #include "driver/i2c.h"
 
 uint8 ExtIO_init();
+void WYM_init();
 uint8 ICACHE_FLASH_ATTR ExtIO_high();
 uint8 ICACHE_FLASH_ATTR ExtIO_low();
 

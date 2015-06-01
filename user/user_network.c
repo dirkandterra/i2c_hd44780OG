@@ -11,9 +11,11 @@ Tnx to Sprite_TM (source came from his esp8266ircbot)
 #include "user_config.h"
 
 
-
+/*
 static char lineBuf[1024];
 static int lineBufPos;
+*/
+
 err_t err;
 sint8 prob;
 sint8 gotDNS=0;
@@ -37,6 +39,7 @@ typedef struct {
 //Static scan status storage.
 ScanResultData cgiWifiAps;
 
+/*
 static void ICACHE_FLASH_ATTR networkParseLine(struct espconn *conn, char *line) {
 	char buff[1024];
     uint8 page, y;
@@ -46,6 +49,7 @@ static void ICACHE_FLASH_ATTR networkParseLine(struct espconn *conn, char *line)
     os_printf("P-L: %x-%x: %s\n\r",page,y,data);
     display_data(page, y, data);
 }
+
 
 static void ICACHE_FLASH_ATTR networkParseChar(struct espconn *conn, char c) {
 	lineBuf[lineBufPos++]=c;
@@ -57,7 +61,7 @@ static void ICACHE_FLASH_ATTR networkParseChar(struct espconn *conn, char c) {
 		lineBufPos=0;
 	}
 }
-
+*/
 static void ICACHE_FLASH_ATTR networkRecvCb(void *arg, char *data, unsigned short len) {
 	struct espconn *conn=(struct espconn *)arg;
 	/*int x;
